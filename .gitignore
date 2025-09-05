@@ -65,6 +65,15 @@ jspm_packages/
 # AWS
 .aws/
 
+# Security files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+devops-app-key.pem
+instance-details.txt
+
 # Terraform
 *.tfstate
 *.tfstate.*
