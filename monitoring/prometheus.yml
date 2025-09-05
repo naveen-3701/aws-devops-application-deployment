@@ -1,34 +1,9 @@
 global:
   scrape_interval: 15s
-  evaluation_interval: 15s
-
-rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
 
 scrape_configs:
-  - job_name: 'prometheus'
+  - job_name: 'devops-app'
     static_configs:
-      - targets: ['localhost:9090']
-
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['node-exporter:9100']
-
-  - job_name: 'devops-application'
-    static_configs:
-      - targets: ['YOUR_EC2_IP:80']  # Replace with your EC2 IP
-    metrics_path: '/health'
+      - targets: ['54.172.238.185:80']
+    metrics_path: '/metrics'
     scrape_interval: 30s
-    scrape_timeout: 10s
-
-  - job_name: 'docker-containers'
-    static_configs:
-      - targets: ['YOUR_EC2_IP:9323']  # Docker metrics endpoint (if enabled)
-    scrape_interval: 30s
-
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-          - alertmanager:9093
