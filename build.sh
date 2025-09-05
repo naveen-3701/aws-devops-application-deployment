@@ -6,8 +6,9 @@
 set -e  # Exit on any error
 
 # Configuration
-DOCKER_HUB_USERNAME="naveen-3701"
-IMAGE_NAME="devops-application"
+DOCKER_HUB_USERNAME="naveen3701"
+DEV_REPO="naveen-3701-devops-app-dev"
+PROD_REPO="naveen-3701-devops-app-prod"
 DEV_TAG="dev"
 PROD_TAG="prod"
 BUILD_NUMBER=${BUILD_NUMBER:-$(date +%Y%m%d%H%M%S)}
@@ -58,7 +59,8 @@ docker_login() {
 # Function to build Docker image
 build_image() {
     local tag=$1
-    local full_tag="${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${tag}"
+    local repo=$2
+    local full_tag="${DOCKER_HUB_USERNAME}/${repo}:${tag}"
     
     print_status "Building Docker image with tag: ${full_tag}"
     
@@ -73,7 +75,8 @@ build_image() {
 # Function to push Docker image
 push_image() {
     local tag=$1
-    local full_tag="${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${tag}"
+    local repo=$2
+    local full_tag="${DOCKER_HUB_USERNAME}/${repo}:${tag}"
     
     print_status "Pushing Docker image: ${full_tag}"
     
@@ -88,14 +91,15 @@ push_image() {
 # Function to tag image with build number
 tag_with_build_number() {
     local tag=$1
-    local full_tag="${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${tag}"
-    local build_tag="${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${tag}-${BUILD_NUMBER}"
+    local repo=$2
+    local full_tag="${DOCKER_HUB_USERNAME}/${repo}:${tag}"
+    local build_tag="${DOCKER_HUB_USERNAME}/${repo}:${tag}-${BUILD_NUMBER}"
     
     print_status "Tagging image with build number: ${build_tag}"
     
     if docker tag "${full_tag}" "${build_tag}"; then
         print_success "Successfully tagged image: ${build_tag}"
-        push_image "${tag}-${BUILD_NUMBER}"
+        push_image "${tag}-${BUILD_NUMBER}" "${repo}"
     else
         print_error "Failed to tag image: ${build_tag}"
         exit 1
@@ -117,30 +121,30 @@ main() {
     # Determine which environment to build based on branch or parameter
     if [ "$1" = "dev" ]; then
         print_status "Building for DEV environment"
-        build_image "${DEV_TAG}"
-        push_image "${DEV_TAG}"
-        tag_with_build_number "${DEV_TAG}"
+        build_image "${DEV_TAG}" "${DEV_REPO}"
+        push_image "${DEV_TAG}" "${DEV_REPO}"
+        tag_with_build_number "${DEV_TAG}" "${DEV_REPO}"
     elif [ "$1" = "prod" ]; then
         print_status "Building for PROD environment"
-        build_image "${PROD_TAG}"
-        push_image "${PROD_TAG}"
-        tag_with_build_number "${PROD_TAG}"
+        build_image "${PROD_TAG}" "${PROD_REPO}"
+        push_image "${PROD_TAG}" "${PROD_REPO}"
+        tag_with_build_number "${PROD_TAG}" "${PROD_REPO}"
     else
         print_status "Building for both DEV and PROD environments"
-        build_image "${DEV_TAG}"
-        build_image "${PROD_TAG}"
-        push_image "${DEV_TAG}"
-        push_image "${PROD_TAG}"
-        tag_with_build_number "${DEV_TAG}"
-        tag_with_build_number "${PROD_TAG}"
+        build_image "${DEV_TAG}" "${DEV_REPO}"
+        build_image "${PROD_TAG}" "${PROD_REPO}"
+        push_image "${DEV_TAG}" "${DEV_REPO}"
+        push_image "${PROD_TAG}" "${PROD_REPO}"
+        tag_with_build_number "${DEV_TAG}" "${DEV_REPO}"
+        tag_with_build_number "${PROD_TAG}" "${PROD_REPO}"
     fi
     
     print_success "Build process completed successfully!"
     print_status "Images pushed to Docker Hub:"
-    print_status "  - ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}"
-    print_status "  - ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}"
-    print_status "  - ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER}"
-    print_status "  - ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER}"
+    print_status "  - ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}"
+    print_status "  - ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}"
+    print_status "  - ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER}"
+    print_status "  - ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER}"
 }
 
 # Show usage if no arguments provided

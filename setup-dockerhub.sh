@@ -8,8 +8,8 @@ set -e
 # Configuration
 DOCKER_HUB_USERNAME="naveen-3701"
 IMAGE_NAME="devops-application"
-DEV_REPO="dev"
-PROD_REPO="prod"
+DEV_REPO="devops-app-dev"
+PROD_REPO="devops-app-prod"
 
 # Colors for output
 RED='\033[0;31m'

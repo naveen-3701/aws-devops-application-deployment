@@ -2,8 +2,9 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_HUB_USERNAME = 'naveen-3701'
-        IMAGE_NAME = 'devops-application'
+        DOCKER_HUB_USERNAME = 'naveen3701'
+        DEV_REPO = 'naveen-3701-devops-app-dev'
+        PROD_REPO = 'naveen-3701-devops-app-prod'
         DEV_TAG = 'dev'
         PROD_TAG = 'prod'
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
@@ -24,22 +25,22 @@ pipeline {
                     if (env.BRANCH_NAME == 'dev') {
                         echo "Building DEV image"
                         sh """
-                            docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG} .
-                            docker tag ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG} ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER}
+                            docker build -t ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG} .
+                            docker tag ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG} ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER}
                         """
                     } else if (env.BRANCH_NAME == 'main') {
                         echo "Building PROD image"
                         sh """
-                            docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG} .
-                            docker tag ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG} ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER}
+                            docker build -t ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG} .
+                            docker tag ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG} ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER}
                         """
                     } else {
                         echo "Building both DEV and PROD images"
                         sh """
-                            docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG} .
-                            docker build -t ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG} .
-                            docker tag ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG} ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER}
-                            docker tag ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG} ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER}
+                            docker build -t ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG} .
+                            docker build -t ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG} .
+                            docker tag ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG} ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER}
+                            docker tag ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG} ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER}
                         """
                     }
                 }
@@ -55,22 +56,22 @@ pipeline {
                         if (env.BRANCH_NAME == 'dev') {
                             echo "Pushing DEV image to Docker Hub"
                             sh """
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER}
+                                docker push ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}
+                                docker push ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER}
                             """
                         } else if (env.BRANCH_NAME == 'main') {
                             echo "Pushing PROD image to Docker Hub"
                             sh """
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER}
+                                docker push ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}
+                                docker push ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER}
                             """
                         } else {
                             echo "Pushing both DEV and PROD images to Docker Hub"
                             sh """
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER}
-                                docker push ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER}
+                                docker push ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}
+                                docker push ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}
+                                docker push ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER}
+                                docker push ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER}
                             """
                         }
                     }
@@ -125,10 +126,10 @@ pipeline {
         always {
             // Clean up Docker images
             sh """
-                docker rmi ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG} || true
-                docker rmi ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG} || true
-                docker rmi ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${DEV_TAG}-${BUILD_NUMBER} || true
-                docker rmi ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${PROD_TAG}-${BUILD_NUMBER} || true
+                docker rmi ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG} || true
+                docker rmi ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG} || true
+                docker rmi ${DOCKER_HUB_USERNAME}/${DEV_REPO}:${DEV_TAG}-${BUILD_NUMBER} || true
+                docker rmi ${DOCKER_HUB_USERNAME}/${PROD_REPO}:${PROD_TAG}-${BUILD_NUMBER} || true
             """
         }
         

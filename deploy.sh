@@ -6,8 +6,9 @@
 set -e  # Exit on any error
 
 # Configuration
-DOCKER_HUB_USERNAME="naveen-3701"
-IMAGE_NAME="devops-application"
+DOCKER_HUB_USERNAME="naveen3701"
+DEV_REPO="naveen-3701-devops-app-dev"
+PROD_REPO="naveen-3701-devops-app-prod"
 DEV_TAG="dev"
 PROD_TAG="prod"
 CONTAINER_NAME="devops-application"
@@ -139,7 +140,13 @@ install_docker_on_ec2() {
 # Function to deploy application
 deploy_application() {
     local environment=$1
-    local image_tag="${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${environment}"
+    local repo_name=""
+    if [ "$environment" = "dev" ]; then
+        repo_name="${DEV_REPO}"
+    else
+        repo_name="${PROD_REPO}"
+    fi
+    local image_tag="${DOCKER_HUB_USERNAME}/${repo_name}:${environment}"
     
     print_status "Deploying application for $environment environment..."
     print_status "Using image: $image_tag"
@@ -213,7 +220,7 @@ show_summary() {
     print_status "  Application URL: http://$AWS_EC2_HOST"
     print_status "  Health Check URL: http://$AWS_EC2_HOST/health"
     print_status "  Container Name: $CONTAINER_NAME"
-    print_status "  Image: ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:${environment}"
+    print_status "  Image: ${DOCKER_HUB_USERNAME}/${repo_name}:${environment}"
     echo ""
     print_status "Useful commands:"
     print_status "  SSH to server: ssh -i $AWS_EC2_KEY $AWS_EC2_USER@$AWS_EC2_HOST"
@@ -236,7 +243,7 @@ main() {
     print_status "  Environment: $environment"
     print_status "  EC2 Host: $AWS_EC2_HOST"
     print_status "  EC2 Key: $AWS_EC2_KEY"
-    print_status "  Image: ${DOCKER_HUB_USERNAME}/${IMAGE_NAME}:$environment"
+    print_status "  Image: ${DOCKER_HUB_USERNAME}/${repo_name}:$environment"
     
     # Test SSH connection
     test_ssh_connection
