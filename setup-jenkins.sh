@@ -1,0 +1,138 @@
+#!/bin/bash
+
+# Jenkins Setup Script
+# This script provides instructions for setting up Jenkins with GitHub integration
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+print_status "Jenkins Setup Instructions for DevOps Application Deployment"
+echo ""
+print_status "=== JENKINS INSTALLATION ==="
+echo ""
+print_status "1. Install Jenkins on your server:"
+print_status "   - Ubuntu/Debian: sudo apt update && sudo apt install jenkins"
+print_status "   - CentOS/RHEL: sudo yum install jenkins"
+print_status "   - Or use Docker: docker run -p 8080:8080 jenkins/jenkins:lts"
+echo ""
+print_status "2. Start Jenkins service:"
+print_status "   sudo systemctl start jenkins"
+print_status "   sudo systemctl enable jenkins"
+echo ""
+print_status "3. Access Jenkins:"
+print_status "   http://your-server-ip:8080"
+print_status "   Initial admin password: sudo cat /var/lib/jenkins/secrets/initialAdminPassword"
+echo ""
+print_status "=== REQUIRED PLUGINS ==="
+echo ""
+print_status "Install these plugins in Jenkins:"
+print_status "  - Git"
+print_status "  - GitHub"
+print_status "  - Docker Pipeline"
+print_status "  - Credentials Binding"
+print_status "  - SSH Agent"
+print_status "  - Build Timeout"
+print_status "  - Timestamper"
+print_status "  - Workspace Cleanup"
+print_status "  - Ant"
+print_status "  - Gradle"
+print_status "  - Pipeline"
+print_status "  - Pipeline: Stage View"
+print_status "  - Pipeline: GitHub"
+print_status "  - Blue Ocean (optional but recommended)"
+echo ""
+print_status "=== CREDENTIALS SETUP ==="
+echo ""
+print_status "1. Docker Hub Credentials:"
+print_status "   - Go to Jenkins > Manage Jenkins > Manage Credentials"
+print_status "   - Add new credentials with ID: 'docker-hub-credentials'"
+print_status "   - Type: Username with password"
+print_status "   - Username: your-dockerhub-username"
+print_status "   - Password: your-dockerhub-password"
+echo ""
+print_status "2. AWS EC2 Host:"
+print_status "   - Add new credentials with ID: 'aws-ec2-host'"
+print_status "   - Type: Secret text"
+print_status "   - Secret: your-ec2-public-ip"
+echo ""
+print_status "3. AWS EC2 Key:"
+print_status "   - Add new credentials with ID: 'aws-ec2-key'"
+print_status "   - Type: Secret file"
+print_status "   - File: upload your .pem key file"
+echo ""
+print_status "=== PIPELINE CONFIGURATION ==="
+echo ""
+print_status "1. Create a new Pipeline job:"
+print_status "   - Click 'New Item'"
+print_status "   - Enter name: 'devops-application-pipeline'"
+print_status "   - Select 'Pipeline'"
+print_status "   - Click 'OK'"
+echo ""
+print_status "2. Configure the pipeline:"
+print_status "   - Pipeline > Definition: Pipeline script from SCM"
+print_status "   - SCM: Git"
+print_status "   - Repository URL: https://github.com/naveen-3701/aws-devops-application-deployment.git"
+print_status "   - Branch Specifier: */dev and */main"
+print_status "   - Script Path: Jenkinsfile"
+echo ""
+print_status "3. Build Triggers:"
+print_status "   - GitHub hook trigger for GITScm polling"
+print_status "   - Poll SCM: H/5 * * * * (every 5 minutes)"
+echo ""
+print_status "=== GITHUB WEBHOOK SETUP ==="
+echo ""
+print_status "1. Go to your GitHub repository settings"
+print_status "2. Navigate to 'Webhooks'"
+print_status "3. Click 'Add webhook'"
+print_status "4. Configure:"
+print_status "   - Payload URL: http://your-jenkins-server:8080/github-webhook/"
+print_status "   - Content type: application/json"
+print_status "   - Events: Just the push event"
+print_status "   - Active: ✓"
+echo ""
+print_status "=== WORKFLOW ==="
+echo ""
+print_status "The pipeline will automatically:"
+print_status "  - Trigger on push to 'dev' branch → Build and push to 'dev' Docker Hub repo"
+print_status "  - Trigger on push to 'main' branch → Build and push to 'prod' Docker Hub repo"
+print_status "  - Deploy to AWS EC2 instance"
+print_status "  - Perform health checks"
+echo ""
+print_status "=== TESTING ==="
+echo ""
+print_status "1. Test the pipeline:"
+print_status "   - Make a change to the code"
+print_status "   - Push to 'dev' branch"
+print_status "   - Check Jenkins for automatic build"
+print_status "   - Verify Docker Hub for new image"
+print_status "   - Check AWS EC2 for deployment"
+echo ""
+print_status "2. Monitor the pipeline:"
+print_status "   - Jenkins dashboard shows build status"
+print_status "   - Console output shows detailed logs"
+print_status "   - Blue Ocean provides visual pipeline view"
+echo ""
+print_success "Jenkins setup instructions completed!"
+print_status "Next: Set up AWS EC2 instance and monitoring system"
